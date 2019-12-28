@@ -1,40 +1,81 @@
 let inputs = [input, input1, input2];
 
-function focusInput(inputId, inputId1 = null, inputId2 = null, buferImp = null) {      
+input.oninput   = function(){ handler(event.key); };
+input1.oninput  = function(){ handler1(); };
+input2.oninput  = function(){ handler2(); };
+input1.onkeydown = function(){
+  if (input1.value.length == 0) {
+    input.focus();
+  }
+}
+input2.onkeydown = function(){
+  if (input2.value.length == 0) {
+    input1.focus();
+  }
+}
 
+
+
+function handler() {
   while (true) {
-    if (!isFinite(inputId[0].value)) {
-      inputId[0].value = inputId[0].value.slice(0, inputId[0].value.length - 1).trim();
+    if (!isFinite(input.value)) {
+      input.value = input.value.slice(0, input.value.length - 1).trim();
     }else{
       break;
     }    
   }
 
-  if (inputId[0].value.length >= 3 && inputId[0] != input2) { 
-    let value  = inputId[0].value.trim();
+  if (input.value.length >= 3) { 
+    let value  = input.value.trim();
     let result = value.slice(0, 3);
     let bufer  = value.slice(3);
-    inputId[0].value = result;
-    if (inputId1 != null) {
-      inputId1[0].focus();
-      inputId1[0].value = bufer.slice(0, 3);
-      bufer             = bufer.slice(3);
-      if (buferImp != null) {
-        inputId1[0].value = buferImp.slice(0, 3);
-      }
-      if (inputId2 != null) {
-        focusInput(inputId1, inputId2, null, bufer);
-      }      
+    input.value = result;
+    input1.focus();
+    input1.value = bufer.slice(0, 3);
+    input2.value = bufer.slice(3, 7);
+  }else{
+    needStr([input, 0]);
+  }
+};
+
+function handler1() {
+
+  while (true) {
+    if (!isFinite(input1.value)) {
+      input1.value = input1.value.slice(0, input1.value.length - 1).trim();
+    }else{
+      break;
     }    
-  }else if (inputId[0] == input2 && inputId[0].value.length >= 4) {
-    let value  = inputId[0].value.trim();
-    let result = value.slice(0, 4);
-    inputId[0].value = result;
-    endForm()
-  } else {
-    needStr(inputId);
   }
 
+  if (input1.value.length >= 3) { 
+    let value  = input1.value.trim();
+    let result = value.slice(0, 3);
+    let bufer  = value.slice(3);
+    input1.value = result;
+    input2.focus();
+    input2.value = bufer.slice(0, 3);
+  }else{
+    needStr([input1, 1]);
+  }
+};
+
+function handler2() {
+
+  while (true) {
+    if (!isFinite(input2.value)) {
+      input2.value = input2.value.slice(0, input2.value.length - 1).trim();
+    }else{
+      break;
+    }    
+  }
+
+  if (input2.value.length >= 4) { 
+    let value  = input2.value.trim();
+    let result = value.slice(0, 4);
+    input2.value = result;
+    endForm();
+  }
 };
 
 function needStr(inputId) {
@@ -50,17 +91,13 @@ function needStr(inputId) {
         }
       }  
     }    
-  }
+  }  
 }
 
 function endForm() {
-
   inputBlock.style.display = "none";
-
   let xhr = new XMLHttpRequest();
-
   xhr.open("GET", "assets/text.txt", false);
-  
   try {
     xhr.send();
     if (xhr.status != 200) {
@@ -74,7 +111,3 @@ function endForm() {
     alert("Запрос не удался");
   }
 }
-
-input.oninput  = function(){ focusInput([input, 0],  [input1, 1], [input2, 2]); };
-input1.oninput = function(){ focusInput([input1, 1], [input2, 2]); };
-input2.oninput = function(){ focusInput([input2, 2]); }; 
